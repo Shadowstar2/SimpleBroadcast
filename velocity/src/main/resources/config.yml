@@ -1,0 +1,4 @@
+# SimpleBroadcast config for Velocity
+# Supports full MiniMessage formatting: https://docs.advntr.dev/minimessage/format.html
+
+prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "

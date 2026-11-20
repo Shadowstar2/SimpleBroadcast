@@ -29,19 +29,22 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew build
 
-      - name: Locate release jar
-        id: locate_jar
+      - name: Locate release jars
+        id: locate_jars
         run: |
-          JAR_FILE=$(find build/libs -maxdepth 1 -type f -name "*.jar" ! -name "*-plain.jar" ! -name "*-sources.jar" | head -n 1)
-          if [ -z "$JAR_FILE" ]; then
-            echo "Error: No compiled jar found in build/libs/"
+          JARS=$(find paper/build/libs velocity/build/libs -maxdepth 1 -type f -name "*.jar" ! -name "*-plain*.jar" ! -name "*-sources*.jar" ! -name "*-javadoc*.jar")
+          if [ -z "$JARS" ]; then
+            echo "Error: No release jars found in paper/build/libs or velocity/build/libs"
             exit 1
           fi
-          echo "Found jar: $JAR_FILE"
-          echo "jar_file=$JAR_FILE" >> "$GITHUB_OUTPUT"
+          echo "Found release jars:"
+          echo "$JARS"
+          echo "release_jars<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$JARS" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.locate_jar.outputs.jar_file }}
+          files: ${{ steps.locate_jars.outputs.release_jars }}
           generate_release_notes: true

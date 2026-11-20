@@ -1,24 +1,32 @@
 # SimpleBroadcast
 
-A lightweight, modern Minecraft broadcast solution for Paper servers (1.21+) and Velocity proxies (3.4+) featuring Adventure MiniMessage formatting, rich target routing, and smart tab completion.
+A lightweight, modern Minecraft broadcast solution rewritten in idiomatic **Kotlin 2.1** for **Paper** servers (1.21+) and **Velocity** proxies (3.4+). Features full Adventure MiniMessage formatting, rich target routing, optional sound notifications, PlaceholderAPI integration, and smart tab completion.
+
+---
+
+## Highlights in v1.2.0
+
+- **100% Idiomatic Kotlin Rewrite**: Built with Kotlin 2.1 targeting Java 21, leveraging expression bodies, null-safety, and modern collection operations.
+- **Embedded & Relocated Kotlin Runtime**: `kotlin-stdlib` is shaded and relocated (`dev.announce.simplebroadcast.libs.kotlin`) into both plugin JARs. No external Kotlin plugin/runtime is required.
+- **Clean Artifacts**: Dedicated shaded builds for Paper (`SimpleBroadcast-Paper-1.2.0.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.0.jar`), with unshaded archives tagged as `-plain`.
 
 ---
 
 ## Modules
 
-SimpleBroadcast is organized as a multi-module project:
+SimpleBroadcast is organized as a multi-module Gradle project:
 
-- **`paper`**: Standalone Bukkit/Paper plugin with sound notifications and optional PlaceholderAPI integration.
-- **`velocity`**: Standalone Velocity proxy plugin allowing network-wide or per-backend server broadcasts.
+- **`paper`**: Standalone Bukkit/Paper plugin with sound playback, MiniMessage formatting, and optional PlaceholderAPI integration.
+- **`velocity`**: Standalone Velocity proxy plugin supporting network-wide (`all`) or per-backend server broadcasts with async tab completion.
 
 ---
 
 ## Paper Plugin (`paper`)
 
 ### Features
-- **MiniMessage Formatting**: Full support for Kyori Adventure's MiniMessage format (hex colors, gradients, rainbows, hover, click events).
+- **MiniMessage Formatting**: Complete support for Kyori Adventure's MiniMessage format (hex colors, gradients, rainbows, hover, click events).
 - **PlaceholderAPI Support**: Seamless soft-dependency with PlaceholderAPI. Resolves player placeholders when sent by players and server-wide placeholders (e.g., `%server_online%`) when sent from console.
-- **Broadcast Sound Effect**: Plays a customizable sound (such as `ENTITY_EXPERIENCE_ORB_PICKUP`) to all online players upon broadcasting, or can be left blank to disable.
+- **Broadcast Sound Effect**: Plays a customizable Bukkit sound (default: `ENTITY_EXPERIENCE_ORB_PICKUP`) to all online players upon broadcasting, or leave blank to disable.
 - **Smart Tab Completion**: Auto-completes `reload` for `/simplebroadcast` and suggests common MiniMessage tags as well as online player names for `/broadcast`.
 - **Customizable Prefix**: Configurable broadcast prefix in `config.yml` supporting MiniMessage tags.
 
@@ -51,7 +59,7 @@ sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
 ## Velocity Proxy Plugin (`velocity`)
 
 ### Features
-- **Proxy-Wide & Server-Targeted Broadcasting**: Broadcast to the entire proxy network (`all`) or target a specific registered backend server (`<server>`), both broadcasting to target players and the proxy console.
+- **Proxy-Wide & Server-Targeted Broadcasting**: Broadcast to the entire proxy network (`all`) or target a specific registered backend server (`<server>`), broadcasting to target players and the proxy console.
 - **Standalone Proxy Plugin**: Operates directly on the Velocity proxy without needing any database or backend sub-plugins.
 - **Invalid Target Detection**: Clean error feedback detailing all currently registered target choices if an unknown target is entered.
 - **MiniMessage Support**: Complete Kyori Adventure MiniMessage rendering for prefixes and broadcast messages.
@@ -63,7 +71,7 @@ sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
 ### Commands & Aliases
 | Command | Aliases | Description | Permission |
 | :--- | :--- | :--- | :--- |
-| `/broadcast <all\|server> <message>` | `/bc`, `/bcast`, `/announce` | Broadcasts to all proxy players or players on the specified backend server (+ console). | `simplebroadcast.use` |
+| `/broadcast <all|server> <message>` | `/bc`, `/bcast`, `/announce` | Broadcasts to all proxy players or players on the specified backend server (+ console). | `simplebroadcast.use` |
 | `/simplebroadcastvelocity reload` | `/sbv` | Reloads the Velocity plugin configuration (`config.yml`). | `simplebroadcast.reload` |
 
 ### Permissions
@@ -84,7 +92,6 @@ prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
 
 ## Formatting Examples
 
-### MiniMessage Support
 Both Paper and Velocity modules support all standard tags from [Adventure MiniMessage](https://docs.advntr.dev/minimessage/format.html):
 
 - **Colors & Decorations**:
@@ -117,9 +124,9 @@ This project uses Gradle with the Kotlin DSL and Java 21.
    ```bash
    ./gradlew build
    ```
-3. Compiled artifacts will be located at:
-   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.1.0.jar`
-   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.1.0.jar`
+3. Compiled standalone artifacts will be located at:
+   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.0.jar`
+   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.0.jar`
 
 ---
 

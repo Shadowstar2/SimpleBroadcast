@@ -1,12 +1,11 @@
 plugins {
-    java
+    kotlin("jvm")
+    kotlin("kapt")
     id("com.gradleup.shadow")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
+kotlin {
+    jvmToolchain(21)
 }
 
 repositories {
@@ -16,8 +15,9 @@ repositories {
 
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
+    kapt("com.velocitypowered:velocity-api:3.4.0-SNAPSHOT")
     implementation("org.yaml:snakeyaml:2.2")
+    implementation(kotlin("stdlib"))
 }
 
 tasks {
@@ -25,9 +25,11 @@ tasks {
         archiveBaseName.set("SimpleBroadcast-Velocity")
         archiveClassifier.set("")
         relocate("org.yaml.snakeyaml", "dev.announce.simplebroadcast.velocity.libs.snakeyaml")
+        relocate("kotlin", "dev.announce.simplebroadcast.libs.kotlin")
     }
     jar {
         archiveBaseName.set("SimpleBroadcast-Velocity")
+        archiveClassifier.set("plain")
     }
     build {
         dependsOn(shadowJar)

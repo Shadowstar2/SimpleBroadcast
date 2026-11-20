@@ -1,12 +1,10 @@
 plugins {
-    java
+    kotlin("jvm")
     id("com.gradleup.shadow")
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(21))
-    }
+kotlin {
+    jvmToolchain(21)
 }
 
 repositories {
@@ -18,15 +16,18 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT")
     compileOnly("me.clip:placeholderapi:2.11.6")
+    implementation(kotlin("stdlib"))
 }
 
 tasks {
     shadowJar {
         archiveBaseName.set("SimpleBroadcast-Paper")
         archiveClassifier.set("")
+        relocate("kotlin", "dev.announce.simplebroadcast.libs.kotlin")
     }
     jar {
         archiveBaseName.set("SimpleBroadcast-Paper")
+        archiveClassifier.set("plain")
     }
     build {
         dependsOn(shadowJar)

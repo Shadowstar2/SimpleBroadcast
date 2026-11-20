@@ -1,15 +1,17 @@
 # SimpleBroadcast
 
-A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin 2.1** for **Paper** servers (1.21+) and **Velocity** proxies (3.4+). Features full Adventure MiniMessage formatting, rich target routing, optional sound notifications, PlaceholderAPI integration, smart tab completion, and trusted user access controls.
+A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin 2.1** for **Paper** servers (1.21+) and **Velocity** proxies (3.4+). Features full Adventure MiniMessage formatting, rich target routing, optional sound notifications, PlaceholderAPI integration, smart tab completion, live Brigadier command syncing, and trusted user access controls.
 
 ---
 
-## Highlights in v1.2.1
+## Highlights in v1.2.2
 
-- **Trusted Users Access Control**: Added a configurable `trusted-users` list (usernames or UUIDs) enabling permission-free usage on vanilla/semi-vanilla servers without LuckPerms or other permission managers.
-- **Unified Access Checks**: Centralized `hasAccess` helper enforcing permission, console bypass, and trusted-user verification across command execution and tab completion.
-- **Embedded & Relocated Kotlin Runtime**: `kotlin-stdlib` is shaded and relocated (`dev.announce.simplebroadcast.libs.kotlin`) into both plugin JARs. No external Kotlin plugin/runtime is required.
-- **Clean Artifacts**: Dedicated standalone shaded builds for Paper (`SimpleBroadcast-Paper-1.2.1.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.1.jar`), with unshaded archives tagged as `-plain`.
+- **Live Brigadier Command Refresh**: Reloading the Velocity config immediately resends available commands to all online players, giving newly added `trusted-users` instant tab completion and execution rights without relogging.
+- **Native `/sbv` Alias**: `/sbv` is registered directly as an alias of `/simplebroadcastvelocity`, sharing identical permission checks and tab-completion.
+- **Trusted Users Access Control**: Configurable `trusted-users` list (usernames or UUIDs) enabling permission-free usage on vanilla/semi-vanilla servers and proxies without LuckPerms.
+- **Unified Access Checks**: Centralized `hasAccess` helper enforcing permission, console bypass, and trusted-user verification across command execution, Brigadier permissions, and tab completion.
+- **Embedded & Relocated Kotlin Runtime**: `kotlin-stdlib` is shaded and relocated (`dev.announce.simplebroadcast.libs.kotlin`) into both plugin JARs.
+- **Clean Artifacts**: Dedicated standalone shaded builds for Paper (`SimpleBroadcast-Paper-1.2.2.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.2.jar`), with unshaded archives tagged as `-plain`.
 
 ---
 
@@ -18,7 +20,7 @@ A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin
 SimpleBroadcast is organized as a multi-module Gradle project:
 
 - **`paper`**: Standalone Bukkit/Paper plugin with sound playback, MiniMessage formatting, trusted user support, and optional PlaceholderAPI integration.
-- **`velocity`**: Standalone Velocity proxy plugin supporting network-wide (`all`) or per-backend server broadcasts, trusted user checks, and async tab completion.
+- **`velocity`**: Standalone Velocity proxy plugin supporting network-wide (`all`) or per-backend server broadcasts, live command sync, trusted user checks, and async tab completion.
 
 ---
 
@@ -71,6 +73,7 @@ trusted-users: []
 - **Standalone Proxy Plugin**: Operates directly on the Velocity proxy without needing any database or backend sub-plugins.
 - **Invalid Target Detection**: Clean error feedback detailing all currently registered target choices if an unknown target is entered.
 - **MiniMessage Support**: Complete Kyori Adventure MiniMessage rendering for prefixes and broadcast messages.
+- **Live Brigadier Command Sync**: Automatically resends command trees to all connected players upon reloading config.
 - **Async Tab Completion**:
   - Argument 1: Suggests `all` and all registered backend server names.
   - Argument 2+: Suggests common MiniMessage tags and online proxy player names.
@@ -140,8 +143,8 @@ This project uses Gradle with the Kotlin DSL and Java 21.
    ./gradlew build
    ```
 3. Compiled standalone artifacts will be located at:
-   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.1.jar`
-   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.1.jar`
+   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.2.jar`
+   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.2.jar`
 
 ---
 

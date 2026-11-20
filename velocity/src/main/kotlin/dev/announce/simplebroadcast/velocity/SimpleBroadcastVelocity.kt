@@ -23,7 +23,7 @@ import kotlin.io.path.inputStream
 @Plugin(
     id = "simplebroadcastvelocity",
     name = "SimpleBroadcastVelocity",
-    version = "1.2.1",
+    version = "1.2.2",
     description = "Velocity broadcast plugin with MiniMessage support.",
     authors = ["custom"]
 )
@@ -93,7 +93,27 @@ class SimpleBroadcastVelocity @Inject constructor(
         trustedUsers = loadedTrusted
     }
 
-    fun reloadConfig() = loadConfig()
+    fun reloadConfig() {
+        loadConfig()
+        refreshCommands()
+    }
+
+    fun refreshCommands() {
+        server.allPlayers.forEach { player ->
+            runCatching {
+                val method = sequenceOf(
+                    player.javaClass.methods.asSequence(),
+                    player.javaClass.declaredMethods.asSequence()
+                ).flatten().firstOrNull {
+                    it.name in listOf("updateCommands", "resendCommands", "sendAvailableCommands") && it.parameterCount == 0
+                }
+                method?.let {
+                    it.isAccessible = true
+                    it.invoke(player)
+                }
+            }
+        }
+    }
 
     fun hasAccess(source: CommandSource, permission: String): Boolean {
         if (source !is Player) return true

@@ -1,14 +1,15 @@
 # SimpleBroadcast
 
-A lightweight, modern Minecraft broadcast solution rewritten in idiomatic **Kotlin 2.1** for **Paper** servers (1.21+) and **Velocity** proxies (3.4+). Features full Adventure MiniMessage formatting, rich target routing, optional sound notifications, PlaceholderAPI integration, and smart tab completion.
+A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin 2.1** for **Paper** servers (1.21+) and **Velocity** proxies (3.4+). Features full Adventure MiniMessage formatting, rich target routing, optional sound notifications, PlaceholderAPI integration, smart tab completion, and trusted user access controls.
 
 ---
 
-## Highlights in v1.2.0
+## Highlights in v1.2.1
 
-- **100% Idiomatic Kotlin Rewrite**: Built with Kotlin 2.1 targeting Java 21, leveraging expression bodies, null-safety, and modern collection operations.
+- **Trusted Users Access Control**: Added a configurable `trusted-users` list (usernames or UUIDs) enabling permission-free usage on vanilla/semi-vanilla servers without LuckPerms or other permission managers.
+- **Unified Access Checks**: Centralized `hasAccess` helper enforcing permission, console bypass, and trusted-user verification across command execution and tab completion.
 - **Embedded & Relocated Kotlin Runtime**: `kotlin-stdlib` is shaded and relocated (`dev.announce.simplebroadcast.libs.kotlin`) into both plugin JARs. No external Kotlin plugin/runtime is required.
-- **Clean Artifacts**: Dedicated shaded builds for Paper (`SimpleBroadcast-Paper-1.2.0.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.0.jar`), with unshaded archives tagged as `-plain`.
+- **Clean Artifacts**: Dedicated standalone shaded builds for Paper (`SimpleBroadcast-Paper-1.2.1.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.1.jar`), with unshaded archives tagged as `-plain`.
 
 ---
 
@@ -16,8 +17,8 @@ A lightweight, modern Minecraft broadcast solution rewritten in idiomatic **Kotl
 
 SimpleBroadcast is organized as a multi-module Gradle project:
 
-- **`paper`**: Standalone Bukkit/Paper plugin with sound playback, MiniMessage formatting, and optional PlaceholderAPI integration.
-- **`velocity`**: Standalone Velocity proxy plugin supporting network-wide (`all`) or per-backend server broadcasts with async tab completion.
+- **`paper`**: Standalone Bukkit/Paper plugin with sound playback, MiniMessage formatting, trusted user support, and optional PlaceholderAPI integration.
+- **`velocity`**: Standalone Velocity proxy plugin supporting network-wide (`all`) or per-backend server broadcasts, trusted user checks, and async tab completion.
 
 ---
 
@@ -27,8 +28,9 @@ SimpleBroadcast is organized as a multi-module Gradle project:
 - **MiniMessage Formatting**: Complete support for Kyori Adventure's MiniMessage format (hex colors, gradients, rainbows, hover, click events).
 - **PlaceholderAPI Support**: Seamless soft-dependency with PlaceholderAPI. Resolves player placeholders when sent by players and server-wide placeholders (e.g., `%server_online%`) when sent from console.
 - **Broadcast Sound Effect**: Plays a customizable Bukkit sound (default: `ENTITY_EXPERIENCE_ORB_PICKUP`) to all online players upon broadcasting, or leave blank to disable.
-- **Smart Tab Completion**: Auto-completes `reload` for `/simplebroadcast` and suggests common MiniMessage tags as well as online player names for `/broadcast`.
+- **Smart Tab Completion**: Auto-completes `reload` for `/simplebroadcast` and suggests common MiniMessage tags as well as online player names for `/broadcast` (restricted to permitted/trusted users).
 - **Customizable Prefix**: Configurable broadcast prefix in `config.yml` supporting MiniMessage tags.
+- **Trusted Users**: Allow specific players by username or UUID to execute broadcasts without a permission manager.
 
 ### Commands & Aliases
 | Command | Aliases | Description | Permission |
@@ -42,6 +44,8 @@ SimpleBroadcast is organized as a multi-module Gradle project:
 | `simplebroadcast.use` | Allows execution and tab-completion of `/broadcast` and its aliases. | `op` |
 | `simplebroadcast.reload` | Allows reloading configuration via `/simplebroadcast reload`. | `op` |
 
+*Note: Any player listed under `trusted-users` in `config.yml` bypasses permission requirements.*
+
 ### Configuration (`plugins/SimpleBroadcast/config.yml`)
 ```yaml
 # SimpleBroadcast config
@@ -52,6 +56,10 @@ prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
 # Sound played to all players when a broadcast is sent.
 # Set to a valid Bukkit Sound name (e.g., ENTITY_EXPERIENCE_ORB_PICKUP), or leave blank ("") to disable.
 sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+
+# Optional list of player usernames or UUIDs allowed to use SimpleBroadcast commands
+# Intended for servers/proxies without LuckPerms or a permission plugin (leave empty if using LuckPerms).
+trusted-users: []
 ```
 
 ---
@@ -67,6 +75,7 @@ sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
   - Argument 1: Suggests `all` and all registered backend server names.
   - Argument 2+: Suggests common MiniMessage tags and online proxy player names.
   - `/sbv`: Suggests `reload` when permitted.
+- **Trusted Users**: Allow specific proxy players by username or UUID to execute broadcasts without a permission manager.
 
 ### Commands & Aliases
 | Command | Aliases | Description | Permission |
@@ -80,12 +89,18 @@ sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
 | `simplebroadcast.use` | Allows execution and tab completion of `/broadcast` and its aliases. | `true` |
 | `simplebroadcast.reload` | Allows reloading configuration via `/simplebroadcastvelocity reload` (`/sbv`). | `op` |
 
+*Note: Any player listed under `trusted-users` in `config.yml` bypasses permission requirements.*
+
 ### Configuration (`plugins/simplebroadcastvelocity/config.yml`)
 ```yaml
 # SimpleBroadcast config for Velocity
 # Supports full MiniMessage formatting: https://docs.advntr.dev/minimessage/format.html
 
 prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
+
+# Optional list of player usernames or UUIDs allowed to use SimpleBroadcast commands
+# Intended for servers/proxies without LuckPerms or a permission plugin (leave empty if using LuckPerms).
+trusted-users: []
 ```
 
 ---
@@ -125,8 +140,8 @@ This project uses Gradle with the Kotlin DSL and Java 21.
    ./gradlew build
    ```
 3. Compiled standalone artifacts will be located at:
-   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.0.jar`
-   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.0.jar`
+   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.1.jar`
+   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.1.jar`
 
 ---
 

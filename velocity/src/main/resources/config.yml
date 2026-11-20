@@ -2,3 +2,7 @@
 # Supports full MiniMessage formatting: https://docs.advntr.dev/minimessage/format.html
 
 prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
+
+# Optional list of player usernames or UUIDs allowed to use SimpleBroadcast commands
+# Intended for servers/proxies without LuckPerms or a permission plugin (leave empty if using LuckPerms).
+trusted-users: []

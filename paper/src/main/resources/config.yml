@@ -6,3 +6,7 @@ prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
 # Sound played to all players when a broadcast is sent.
 # Set to a valid Bukkit Sound name (e.g., ENTITY_EXPERIENCE_ORB_PICKUP), or leave blank ("") to disable.
 sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+
+# Optional list of player usernames or UUIDs allowed to use SimpleBroadcast commands
+# Intended for servers/proxies without LuckPerms or a permission plugin (leave empty if using LuckPerms).
+trusted-users: []

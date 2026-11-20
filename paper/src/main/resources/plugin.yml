@@ -1,5 +1,5 @@
 name: SimpleBroadcast
-version: 1.2.0
+version: 1.2.1
 main: dev.announce.simplebroadcast.SimpleBroadcast
 api-version: "1.21"
 description: Lightweight broadcast plugin with full MiniMessage and PlaceholderAPI support.

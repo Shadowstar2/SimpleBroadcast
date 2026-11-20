@@ -10,7 +10,7 @@ class SbvCommand(private val plugin: SimpleBroadcastVelocity) : SimpleCommand {
 
     override fun execute(invocation: Invocation) {
         val source = invocation.source()
-        if (!source.hasPermission("simplebroadcast.reload")) {
+        if (!plugin.hasAccess(source, "simplebroadcast.reload")) {
             source.sendMessage(plugin.miniMessage.deserialize("<red>You don't have permission to do that.</red>"))
             return
         }
@@ -26,11 +26,11 @@ class SbvCommand(private val plugin: SimpleBroadcastVelocity) : SimpleCommand {
     }
 
     override fun hasPermission(invocation: Invocation): Boolean =
-        invocation.source().hasPermission("simplebroadcast.reload")
+        plugin.hasAccess(invocation.source(), "simplebroadcast.reload")
 
     override fun suggestAsync(invocation: Invocation): CompletableFuture<List<String>> {
         val source = invocation.source()
-        if (!source.hasPermission("simplebroadcast.reload")) {
+        if (!plugin.hasAccess(source, "simplebroadcast.reload")) {
             return CompletableFuture.completedFuture(emptyList())
         }
 

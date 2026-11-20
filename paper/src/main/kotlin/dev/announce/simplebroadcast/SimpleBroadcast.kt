@@ -36,6 +36,21 @@ class SimpleBroadcast : JavaPlugin() {
         logger.info("SimpleBroadcast enabled.")
     }
 
+    fun hasAccess(sender: CommandSender, permission: String): Boolean {
+        if (sender !is Player) return true
+        if (sender.hasPermission(permission)) return true
+        val trusted = config.getStringList("trusted-users")
+        if (trusted.isEmpty()) return false
+        val uuidStr = sender.uniqueId.toString()
+        val name = sender.name
+        return trusted.any { entry ->
+            val trimmed = entry.trim()
+            trimmed.equals(uuidStr, ignoreCase = true) ||
+            trimmed.replace("-", "").equals(uuidStr.replace("-", ""), ignoreCase = true) ||
+            trimmed.equals(name, ignoreCase = true)
+        }
+    }
+
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean =
         when (command.name.lowercase(Locale.ROOT)) {
             "simplebroadcast" -> handleAdminCommand(sender, args)
@@ -44,11 +59,12 @@ class SimpleBroadcast : JavaPlugin() {
         }
 
     private fun handleAdminCommand(sender: CommandSender, args: Array<out String>): Boolean {
+        if (!hasAccess(sender, "simplebroadcast.reload")) {
+            sender.sendMessage(miniMessage.deserialize("<red>You don't have permission to do that."))
+            return true
+        }
+
         if (args.isNotEmpty() && args[0].equals("reload", ignoreCase = true)) {
-            if (!sender.hasPermission("simplebroadcast.reload")) {
-                sender.sendMessage(miniMessage.deserialize("<red>You don't have permission to do that."))
-                return true
-            }
             reloadConfig()
             sender.sendMessage(miniMessage.deserialize("<green>SimpleBroadcast config reloaded."))
             return true
@@ -58,7 +74,7 @@ class SimpleBroadcast : JavaPlugin() {
     }
 
     private fun handleBroadcastCommand(sender: CommandSender, label: String, args: Array<out String>): Boolean {
-        if (!sender.hasPermission("simplebroadcast.use")) {
+        if (!hasAccess(sender, "simplebroadcast.use")) {
             sender.sendMessage(miniMessage.deserialize("<red>You don't have permission to do that."))
             return true
         }
@@ -101,14 +117,16 @@ class SimpleBroadcast : JavaPlugin() {
     override fun onTabComplete(sender: CommandSender, command: Command, alias: String, args: Array<out String>): List<String> =
         when (command.name.lowercase(Locale.ROOT)) {
             "simplebroadcast" -> {
-                if (args.size == 1 && "reload".startsWith(args[0], ignoreCase = true)) {
+                if (!hasAccess(sender, "simplebroadcast.reload")) {
+                    emptyList()
+                } else if (args.size == 1 && "reload".startsWith(args[0], ignoreCase = true)) {
                     listOf("reload")
                 } else {
                     emptyList()
                 }
             }
             "broadcast" -> {
-                if (!sender.hasPermission("simplebroadcast.use")) {
+                if (!hasAccess(sender, "simplebroadcast.use")) {
                     emptyList()
                 } else {
                     val current = args.lastOrNull()?.lowercase(Locale.ROOT).orEmpty()

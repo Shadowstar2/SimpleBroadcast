@@ -20,7 +20,7 @@ class BroadcastCommand(private val plugin: SimpleBroadcastVelocity) : SimpleComm
 
     override fun execute(invocation: Invocation) {
         val source = invocation.source()
-        if (!source.hasPermission("simplebroadcast.use")) {
+        if (!plugin.hasAccess(source, "simplebroadcast.use")) {
             source.sendMessage(plugin.miniMessage.deserialize("<red>You don't have permission to do that.</red>"))
             return
         }
@@ -58,11 +58,11 @@ class BroadcastCommand(private val plugin: SimpleBroadcastVelocity) : SimpleComm
     }
 
     override fun hasPermission(invocation: Invocation): Boolean =
-        invocation.source().hasPermission("simplebroadcast.use")
+        plugin.hasAccess(invocation.source(), "simplebroadcast.use")
 
     override fun suggestAsync(invocation: Invocation): CompletableFuture<List<String>> {
         val source = invocation.source()
-        if (!source.hasPermission("simplebroadcast.use")) {
+        if (!plugin.hasAccess(source, "simplebroadcast.use")) {
             return CompletableFuture.completedFuture(emptyList())
         }
 

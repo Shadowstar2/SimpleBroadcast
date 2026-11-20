@@ -2,10 +2,12 @@ package dev.announce.simplebroadcast.velocity
 
 import com.google.inject.Inject
 import com.velocitypowered.api.command.CommandMeta
+import com.velocitypowered.api.command.CommandSource
 import com.velocitypowered.api.event.Subscribe
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent
 import com.velocitypowered.api.plugin.Plugin
 import com.velocitypowered.api.plugin.annotation.DataDirectory
+import com.velocitypowered.api.proxy.Player
 import com.velocitypowered.api.proxy.ProxyServer
 import dev.announce.simplebroadcast.velocity.command.BroadcastCommand
 import dev.announce.simplebroadcast.velocity.command.SbvCommand
@@ -21,7 +23,7 @@ import kotlin.io.path.inputStream
 @Plugin(
     id = "simplebroadcastvelocity",
     name = "SimpleBroadcastVelocity",
-    version = "1.2.0",
+    version = "1.2.1",
     description = "Velocity broadcast plugin with MiniMessage support.",
     authors = ["custom"]
 )
@@ -32,6 +34,8 @@ class SimpleBroadcastVelocity @Inject constructor(
 ) {
     val miniMessage: MiniMessage = MiniMessage.miniMessage()
     var prefix: String = DEFAULT_PREFIX
+        private set
+    var trustedUsers: List<String> = emptyList()
         private set
 
     companion object {
@@ -60,7 +64,7 @@ class SimpleBroadcastVelocity @Inject constructor(
     }
 
     fun loadConfig() {
-        prefix = runCatching {
+        val (loadedPrefix, loadedTrusted) = runCatching {
             if (!dataDirectory.exists()) {
                 dataDirectory.createDirectories()
             }
@@ -68,17 +72,40 @@ class SimpleBroadcastVelocity @Inject constructor(
             if (!configFile.exists()) {
                 javaClass.classLoader.getResourceAsStream("config.yml")?.use { input ->
                     Files.copy(input, configFile)
-                } ?: Files.writeString(configFile, "prefix: \"$DEFAULT_PREFIX\"\n")
+                } ?: Files.writeString(configFile, "prefix: \"$DEFAULT_PREFIX\"\ntrusted-users: []\n")
             }
 
             configFile.inputStream().use { input ->
                 val data = Yaml().load<Map<String, Any>?>(input)
-                data?.get("prefix")?.toString() ?: DEFAULT_PREFIX
+                val pref = data?.get("prefix")?.toString() ?: DEFAULT_PREFIX
+                val rawTrusted = data?.get("trusted-users")
+                val trusted = when (rawTrusted) {
+                    is List<*> -> rawTrusted.mapNotNull { it?.toString()?.trim() }
+                    else -> emptyList()
+                }
+                Pair(pref, trusted)
             }
         }.onFailure { e ->
             logger.error("Failed to load config.yml", e)
-        }.getOrDefault(DEFAULT_PREFIX)
+        }.getOrDefault(Pair(DEFAULT_PREFIX, emptyList()))
+
+        prefix = loadedPrefix
+        trustedUsers = loadedTrusted
     }
 
     fun reloadConfig() = loadConfig()
+
+    fun hasAccess(source: CommandSource, permission: String): Boolean {
+        if (source !is Player) return true
+        if (source.hasPermission(permission)) return true
+        if (trustedUsers.isEmpty()) return false
+        val uuidStr = source.uniqueId.toString()
+        val username = source.username
+        return trustedUsers.any { entry ->
+            val trimmed = entry.trim()
+            trimmed.equals(uuidStr, ignoreCase = true) ||
+            trimmed.replace("-", "").equals(uuidStr.replace("-", ""), ignoreCase = true) ||
+            trimmed.equals(username, ignoreCase = true)
+        }
+    }
 }

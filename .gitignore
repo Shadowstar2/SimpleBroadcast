@@ -1,0 +1,25 @@
+# Gradle build outputs
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# Compiled class files
+bin/
+out/
+*.class
+
+# IDE and Project files
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.classpath
+.project
+
+# Temporary and OS files
+*.log
+.DS_Store
+Thumbs.db

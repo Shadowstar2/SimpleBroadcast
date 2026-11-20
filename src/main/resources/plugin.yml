@@ -1,0 +1,28 @@
+name: SimpleBroadcast
+version: 1.0.0
+main: dev.announce.simplebroadcast.SimpleBroadcast
+api-version: "1.21"
+description: Lightweight broadcast plugin with full MiniMessage and PlaceholderAPI support.
+authors: [custom]
+
+softdepend:
+  - PlaceholderAPI
+
+commands:
+  broadcast:
+    description: Broadcast a MiniMessage formatted message to all players.
+    usage: /broadcast <message>
+    permission: simplebroadcast.use
+    aliases: [bc, bcast, announce]
+  simplebroadcast:
+    description: SimpleBroadcast admin commands.
+    usage: /simplebroadcast reload
+    permission: simplebroadcast.reload
+
+permissions:
+  simplebroadcast.use:
+    description: Allows use of the broadcast command.
+    default: op
+  simplebroadcast.reload:
+    description: Allows reloading the SimpleBroadcast config.
+    default: op

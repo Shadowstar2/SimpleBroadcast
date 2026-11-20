@@ -1,15 +1,17 @@
 # SimpleBroadcast
 
-A lightweight, modern Minecraft broadcast plugin for Paper servers (1.21+) featuring full Adventure MiniMessage formatting and optional PlaceholderAPI integration.
+A lightweight, modern Minecraft broadcast plugin for Paper servers (1.21+) featuring full Adventure MiniMessage formatting, optional PlaceholderAPI integration, and customizable sound notifications.
 
 ---
 
 ## Features
 
 - **MiniMessage Formatting**: Full support for Kyori Adventure's MiniMessage format, including hex colors, gradients, rainbows, bold, italic, hover events, and click events.
-- **PlaceholderAPI Support**: Seamless soft-dependency with PlaceholderAPI. Player placeholders in broadcast messages and prefix are automatically resolved when a player sends the broadcast.
+- **PlaceholderAPI Support**: Seamless soft-dependency with PlaceholderAPI. Resolves player placeholders when sent by players and server-wide placeholders (e.g., `%server_online%`) when sent from console.
+- **Broadcast Sound Effect**: Plays a customizable sound (such as `ENTITY_EXPERIENCE_ORB_PICKUP`) to all online players upon broadcasting, or can be left blank to disable.
+- **Smart Tab Completion**: Auto-completes `reload` for `/simplebroadcast` and suggests common MiniMessage tags as well as online player names for `/broadcast`.
 - **Customizable Prefix**: Configurable broadcast prefix in `config.yml` supporting MiniMessage tags.
-- **Simple & Fast**: Minimal overhead, clean Kotlin DSL Gradle build script, and zero unnecessary bloat.
+- **Clean Permission Handling**: Explicit permission verification with clean MiniMessage formatted messages.
 
 ---
 
@@ -26,7 +28,7 @@ A lightweight, modern Minecraft broadcast plugin for Paper servers (1.21+) featu
 
 | Permission | Description | Default |
 | :--- | :--- | :--- |
-| `simplebroadcast.use` | Allows execution of `/broadcast` and its aliases. | `op` |
+| `simplebroadcast.use` | Allows execution and tab-completion of `/broadcast` and its aliases. | `op` |
 | `simplebroadcast.reload` | Allows reloading configuration via `/simplebroadcast reload`. | `op` |
 
 ---
@@ -40,9 +42,11 @@ The default configuration file (`config.yml`):
 # Supports full MiniMessage formatting: https://docs.advntr.dev/minimessage/format.html
 
 prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
-```
 
-You can customize the prefix using any valid MiniMessage tag or gradient.
+# Sound played to all players when a broadcast is sent.
+# Set to a valid Bukkit Sound name (e.g., ENTITY_EXPERIENCE_ORB_PICKUP), or leave blank ("") to disable.
+sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
+```
 
 ---
 
@@ -68,18 +72,14 @@ SimpleBroadcast supports all standard tags from [Adventure MiniMessage](https://
 
 ### PlaceholderAPI Support
 
-If [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) is installed on the server, placeholders are parsed when executed by players:
+If [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/) is installed on the server, placeholders are parsed:
 
-- Display sender's name:
+- **Player Broadcasts**:
   ```text
   /broadcast <yellow>%player_name% has started a community challenge!
-  ```
-- Display player statistics or world:
-  ```text
   /broadcast <green>%player_name%</green> reached level <gold>%player_level%</gold> in <aqua>%player_world%</aqua>!
   ```
-
-> **Note**: Console broadcasts do not have an associated player, so player-specific placeholders will remain unparsed if sent via the server console.
+- **Console Broadcasts**: Server-wide placeholders (such as `%server_online%` or `%server_ram_used%`) are parsed even without an associated player.
 
 ---
 
@@ -98,7 +98,7 @@ This project uses Gradle with the Kotlin DSL and Java 21.
    ```
 3. The compiled plugin JAR will be located at:
    ```text
-   build/libs/SimpleBroadcast-1.0.0.jar
+   build/libs/SimpleBroadcast-1.0.1.jar
    ```
 
 ---

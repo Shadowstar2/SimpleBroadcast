@@ -2,3 +2,7 @@
 # Supports full MiniMessage formatting: https://docs.advntr.dev/minimessage/format.html
 
 prefix: "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
+
+# Sound played to all players when a broadcast is sent.
+# Set to a valid Bukkit Sound name (e.g., ENTITY_EXPERIENCE_ORB_PICKUP), or leave blank ("") to disable.
+sound: "ENTITY_EXPERIENCE_ORB_PICKUP"

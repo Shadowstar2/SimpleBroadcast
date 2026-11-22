@@ -23,7 +23,7 @@ import kotlin.io.path.inputStream
 @Plugin(
     id = "simplebroadcastvelocity",
     name = "SimpleBroadcastVelocity",
-    version = "1.2.2",
+    version = "1.2.3",
     description = "Velocity broadcast plugin with MiniMessage support.",
     authors = ["custom"]
 )

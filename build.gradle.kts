@@ -6,5 +6,5 @@ plugins {
 
 subprojects {
     group = "dev.announce"
-    version = "1.2.2"
+    version = "1.2.3"
 }

@@ -23,9 +23,10 @@ import kotlin.io.path.inputStream
 @Plugin(
     id = "simplebroadcastvelocity",
     name = "SimpleBroadcastVelocity",
-    version = "1.2.3",
+    version = "1.2.4",
     description = "Velocity broadcast plugin with MiniMessage support.",
-    authors = ["custom"]
+    authors = ["Shadowstar2"],
+    url = "https://github.com/Shadowstar2/SimpleBroadcast"
 )
 class SimpleBroadcastVelocity @Inject constructor(
     val server: ProxyServer,
@@ -60,7 +61,7 @@ class SimpleBroadcastVelocity @Inject constructor(
             .build()
         commandManager.register(sbvMeta, SbvCommand(this))
 
-        logger.info("SimpleBroadcastVelocity enabled.")
+        logger.info("SimpleBroadcastVelocity v1.2.4 by Shadowstar2 enabled — https://github.com/Shadowstar2/SimpleBroadcast")
     }
 
     fun loadConfig() {

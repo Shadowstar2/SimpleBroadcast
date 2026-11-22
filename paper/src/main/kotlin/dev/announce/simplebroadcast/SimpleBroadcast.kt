@@ -33,7 +33,7 @@ class SimpleBroadcast : JavaPlugin() {
         if (papiEnabled) {
             logger.info("PlaceholderAPI found — placeholder support enabled.")
         }
-        logger.info("SimpleBroadcast enabled.")
+        logger.info("SimpleBroadcast v${description.version} by Shadowstar2 enabled — https://github.com/Shadowstar2/SimpleBroadcast")
     }
 
     fun hasAccess(sender: CommandSender, permission: String): Boolean {

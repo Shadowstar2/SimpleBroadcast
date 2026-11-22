@@ -4,7 +4,7 @@ A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin
 
 ---
 
-## Highlights in v1.2.3
+## Highlights in v1.2.4
 
 - **Strict Default-Deny Permissions**: Both Paper and Velocity enforce strict default-deny access controls. Ordinary players cannot execute or tab-complete any commands unless explicitly granted permission via a permission plugin (e.g. LuckPerms), operator status, or `trusted-users`.
 - **Live Brigadier Command Refresh**: Reloading the Velocity config immediately resends available commands to all online players, giving newly added `trusted-users` instant tab completion and execution rights without relogging.
@@ -12,7 +12,7 @@ A lightweight, modern Minecraft broadcast solution written in idiomatic **Kotlin
 - **Trusted Users Access Control**: Configurable `trusted-users` list (usernames or UUIDs) enabling permission-free usage on vanilla/semi-vanilla servers and proxies without LuckPerms.
 - **Unified Access Checks**: Centralized `hasAccess` helper enforcing permission, console bypass, and trusted-user verification across command execution, Brigadier permissions, and tab completion.
 - **Embedded & Relocated Kotlin Runtime**: `kotlin-stdlib` is shaded and relocated (`dev.announce.simplebroadcast.libs.kotlin`) into both plugin JARs.
-- **Clean Artifacts**: Dedicated standalone shaded builds for Paper (`SimpleBroadcast-Paper-1.2.3.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.3.jar`), with unshaded archives tagged as `-plain`.
+- **Clean Artifacts**: Dedicated standalone shaded builds for Paper (`SimpleBroadcast-Paper-1.2.4.jar`) and Velocity (`SimpleBroadcast-Velocity-1.2.4.jar`), with unshaded archives tagged as `-plain`.
 
 ---
 
@@ -144,8 +144,8 @@ This project uses Gradle with the Kotlin DSL and Java 21.
    ./gradlew build
    ```
 3. Compiled standalone artifacts will be located at:
-   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.3.jar`
-   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.3.jar`
+   - Paper: `paper/build/libs/SimpleBroadcast-Paper-1.2.4.jar`
+   - Velocity: `velocity/build/libs/SimpleBroadcast-Velocity-1.2.4.jar`
 
 ---
 

@@ -10,3 +10,16 @@ sound: "ENTITY_EXPERIENCE_ORB_PICKUP"
 # Optional list of player usernames or UUIDs allowed to use SimpleBroadcast commands
 # Intended for servers/proxies without LuckPerms or a permission plugin (leave empty if using LuckPerms).
 trusted-users: []
+
+# Configurable scheduled auto-broadcasts
+auto-broadcast:
+  enabled: false
+  interval-seconds: 300
+  random: false
+  min-players: 1
+  use-prefix: true
+  play-sound: false
+  messages:
+    - "<green>Enjoying the server? Join our Discord at <click:open_url:'https://discord.gg/example'><underlined><aqua>discord.gg/example</aqua></underlined></click>!"
+    - "<gradient:#ff5555:#ffff55>Remember to vote daily</gradient> to earn rewards and support the server!"
+    - "<yellow>Check out our server store for ranks, perks, and cosmetics at <click:open_url:'https://store.example.com'><gold><underlined>store.example.com</underlined></gold></click>!"

@@ -38,14 +38,18 @@ class BroadcastCommand(private val plugin: SimpleBroadcastVelocity) : SimpleComm
 
         when {
             target.equals("all", ignoreCase = true) -> {
-                server.allPlayers.forEach { it.sendMessage(message) }
+                val players = server.allPlayers
+                players.forEach { it.sendMessage(message) }
                 server.consoleCommandSource.sendMessage(message)
+                plugin.playBroadcastSound(players)
             }
             else -> {
                 val targetServer = server.getServer(target)
                 if (targetServer.isPresent) {
-                    targetServer.get().playersConnected.forEach { it.sendMessage(message) }
+                    val players = targetServer.get().playersConnected
+                    players.forEach { it.sendMessage(message) }
                     server.consoleCommandSource.sendMessage(message)
+                    plugin.playBroadcastSound(players)
                 } else {
                     val validTargets = (listOf("all") + server.allServers.map { it.serverInfo.name }.sortedWith(String.CASE_INSENSITIVE_ORDER))
                         .joinToString(", ")

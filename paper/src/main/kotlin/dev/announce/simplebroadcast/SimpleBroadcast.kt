@@ -9,12 +9,28 @@ import org.bukkit.command.Command
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
+import org.bukkit.scheduler.BukkitTask
 import java.util.Locale
+import kotlin.random.Random
+
+data class AutoBroadcastConfig(
+    val enabled: Boolean = false,
+    val intervalSeconds: Long = 300L,
+    val random: Boolean = false,
+    val minPlayers: Int = 1,
+    val usePrefix: Boolean = true,
+    val playSound: Boolean = false,
+    val messages: List<String> = emptyList()
+)
 
 class SimpleBroadcast : JavaPlugin() {
 
     private val miniMessage: MiniMessage by lazy { MiniMessage.miniMessage() }
     private var papiEnabled: Boolean = false
+
+    private var autoBroadcastConfig = AutoBroadcastConfig()
+    private var autoBroadcastTask: BukkitTask? = null
+    private var lastAutoMessageIndex: Int = -1
 
     companion object {
         private const val DEFAULT_PREFIX = "<bold><gradient:#3939FF:#782AD4>[Announce]</gradient></bold> "
@@ -33,7 +49,97 @@ class SimpleBroadcast : JavaPlugin() {
         if (papiEnabled) {
             logger.info("PlaceholderAPI found — placeholder support enabled.")
         }
+        loadAutoBroadcastConfig()
+        startAutoBroadcast()
         logger.info("SimpleBroadcast v${description.version} by Shadowstar2 enabled — https://github.com/Shadowstar2/SimpleBroadcast")
+    }
+
+    override fun onDisable() {
+        stopAutoBroadcast()
+    }
+
+    private fun loadAutoBroadcastConfig() {
+        val sec = config.getConfigurationSection("auto-broadcast")
+        autoBroadcastConfig = if (sec != null) {
+            AutoBroadcastConfig(
+                enabled = sec.getBoolean("enabled", false),
+                intervalSeconds = sec.getLong("interval-seconds", 300L),
+                random = sec.getBoolean("random", false),
+                minPlayers = sec.getInt("min-players", 1),
+                usePrefix = sec.getBoolean("use-prefix", true),
+                playSound = sec.getBoolean("play-sound", false),
+                messages = sec.getStringList("messages")
+            )
+        } else {
+            AutoBroadcastConfig()
+        }
+    }
+
+    fun startAutoBroadcast() {
+        stopAutoBroadcast()
+        lastAutoMessageIndex = -1
+
+        if (!autoBroadcastConfig.enabled || autoBroadcastConfig.messages.isEmpty()) {
+            return
+        }
+
+        val intervalTicks = maxOf(1L, autoBroadcastConfig.intervalSeconds) * 20L
+        autoBroadcastTask = Bukkit.getScheduler().runTaskTimerAsynchronously(
+            this,
+            Runnable { runAutoBroadcast() },
+            intervalTicks,
+            intervalTicks
+        )
+    }
+
+    fun stopAutoBroadcast() {
+        autoBroadcastTask?.cancel()
+        autoBroadcastTask = null
+    }
+
+    private fun runAutoBroadcast() {
+        val cfg = autoBroadcastConfig
+        if (!cfg.enabled || cfg.messages.isEmpty()) return
+
+        val onlinePlayers = Bukkit.getOnlinePlayers()
+        if (onlinePlayers.size < cfg.minPlayers) return
+
+        val messages = cfg.messages
+        val nextIndex = if (messages.size <= 1) {
+            0
+        } else if (cfg.random) {
+            var next = Random.nextInt(messages.size)
+            if (next == lastAutoMessageIndex) {
+                next = (next + 1 + Random.nextInt(messages.size - 1)) % messages.size
+            }
+            next
+        } else {
+            (lastAutoMessageIndex + 1) % messages.size
+        }
+        lastAutoMessageIndex = nextIndex
+
+        var rawMessage = messages[nextIndex]
+        var prefixToUse = if (cfg.usePrefix) {
+            config.getString("prefix", DEFAULT_PREFIX) ?: DEFAULT_PREFIX
+        } else {
+            ""
+        }
+
+        if (papiEnabled) {
+            rawMessage = PlaceholderAPI.setPlaceholders(null, rawMessage)
+            if (prefixToUse.isNotEmpty()) {
+                prefixToUse = PlaceholderAPI.setPlaceholders(null, prefixToUse)
+            }
+        }
+
+        val message: Component = miniMessage.deserialize(prefixToUse + rawMessage)
+        Bukkit.getServer().sendMessage(message)
+
+        if (cfg.playSound) {
+            Bukkit.getScheduler().runTask(this, Runnable {
+                playBroadcastSound()
+            })
+        }
     }
 
     fun hasAccess(sender: CommandSender, permission: String): Boolean {
@@ -66,6 +172,8 @@ class SimpleBroadcast : JavaPlugin() {
 
         if (args.isNotEmpty() && args[0].equals("reload", ignoreCase = true)) {
             reloadConfig()
+            loadAutoBroadcastConfig()
+            startAutoBroadcast()
             sender.sendMessage(miniMessage.deserialize("<green>SimpleBroadcast config reloaded."))
             return true
         }
